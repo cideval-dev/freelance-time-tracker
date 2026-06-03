@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Play, Square } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function formatTime(time: number): string {
   const hours: number = Math.floor(time / 3600);
@@ -15,6 +16,7 @@ function formatTime(time: number): string {
 export default function Home() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -30,13 +32,28 @@ export default function Home() {
     }
   }, [isPlaying])
 
+  function onButtonClick(): void {
+    if (isPlaying) {
+      setIsModalOpen((prev) => !prev);
+    }
+
+    setIsPlaying((prev) => !prev);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-6">{formatTime(time)}</h1>
-      <Button onClick={() => setIsPlaying(!isPlaying)}>
-        {isPlaying ? <Square className="mr-2 size-4 fill-current" /> : <Play className="mr-2 size-4 fill-current" />} 
+      <Button onClick={onButtonClick}>
+        {isPlaying ? <Square className="mr-2 size-4 fill-current" /> : <Play className="mr-2 size-4 fill-current" />}
         {isPlaying ? "Arrêter" : "Démarrer"}
-        </Button>
+      </Button>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enregistrer la session</DialogTitle>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
