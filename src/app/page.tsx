@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Square } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 function formatTime(time: number): string {
   const hours: number = Math.floor(time / 3600);
@@ -17,6 +18,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [taskTitle, setTaskTitle] = useState<string>("");
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -52,6 +54,8 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle>Enregistrer la session</DialogTitle>
           </DialogHeader>
+          <Input placeholder="Sur quoi travaillez-vous ?" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
+          <Button>Enregistrer</Button>
         </DialogContent>
       </Dialog>
     </div>
