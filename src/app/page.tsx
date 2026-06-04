@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Play, Square } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 function formatTime(time: number): string {
@@ -14,11 +14,18 @@ function formatTime(time: number): string {
   return `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
 }
 
+interface Session {
+  id: string;
+  title: string;
+  time: number;
+}
+
 export default function Home() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [taskTitle, setTaskTitle] = useState<string>("");
+  const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -33,6 +40,20 @@ export default function Home() {
       if (interval) clearInterval(interval);
     }
   }, [isPlaying])
+
+  function handleSave(): void {
+    const newSession: Session = {
+      id: crypto.randomUUID(),
+      title: taskTitle,
+      time: time
+    }
+
+    setSessions((prevSessions) => [...prevSessions, newSession]);
+
+    setTime(0);
+    setTaskTitle("");
+    setIsModalOpen(false);
+  }
 
   function onButtonClick(): void {
     if (isPlaying) {
@@ -53,9 +74,10 @@ export default function Home() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Enregistrer la session</DialogTitle>
+            <DialogDescription>Ajoutez un titre pour lier ce temps à un projet ou un client.</DialogDescription>
           </DialogHeader>
           <Input placeholder="Sur quoi travaillez-vous ?" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
-          <Button>Enregistrer</Button>
+          <Button onClick={handleSave}>Enregistrer</Button>
         </DialogContent>
       </Dialog>
     </div>
