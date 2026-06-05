@@ -1,19 +1,15 @@
 import Timer from "@/components/Timer";
-import { getAllSessions } from "@/db/queries";
-import SessionItem from "@/components/SessionItem";
+import { Suspense } from "react";
+import SessionList, { SessionListSkeleton } from "@/components/SessionList";
 
 export default async function Home() {
-  const sessions = await getAllSessions();
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <Timer />
 
-      <ul className="m-6">
-        {sessions.map((session) => (
-          <SessionItem session={session} key={session.id} />
-        ))}
-      </ul>
+      <Suspense fallback={<SessionListSkeleton />}>
+        <SessionList />
+      </Suspense>
     </div>
   );
 }
