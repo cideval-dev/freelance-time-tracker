@@ -11,7 +11,7 @@ function formatTime(time: number): string {
   const minutes: number = Math.floor(time % 3600 / 60);
   const seconds: number = Math.floor(time % 3600 % 60);
 
-  return `${String(hours).padStart(2, '0')} : ${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 interface Session {
@@ -70,6 +70,19 @@ export default function Home() {
         {isPlaying ? <Square className="mr-2 size-4 fill-current" /> : <Play className="mr-2 size-4 fill-current" />}
         {isPlaying ? "Arrêter" : "Démarrer"}
       </Button>
+      <ul className="m-6">
+        {sessions.map((session) => (
+          <li
+            key={session.id}
+            className="flex justify-between items-center p-4 bg-secondary/40 border rounded-xl m-2 gap-1"
+          >
+            <span className="font-medium text-foreground">{session.title}</span>
+            <span className="font-mono text-sm text-muted-foreground bg-secondary px-3 py-1 rounded-md">
+              {formatTime(session.time)}
+            </span>
+          </li>
+        ))}
+      </ul>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
