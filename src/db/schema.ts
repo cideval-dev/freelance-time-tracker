@@ -6,3 +6,5 @@ export const sessionsTable = pgTable("sessions", {
     time: integer("time").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull()
 });
+
+export type Session = typeof sessionsTable.$inferSelect;
