@@ -1,75 +1,14 @@
-'use client'
+import Timer from "@/components/Timer";
+import { formatTime } from "@/lib/utils";
+import { getAllSessions } from "@/db/queries";
 
-import { Button } from "@/components/ui/button";
-import { Play, Square } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-
-function formatTime(time: number): string {
-  const hours: number = Math.floor(time / 3600);
-  const minutes: number = Math.floor(time % 3600 / 60);
-  const seconds: number = Math.floor(time % 3600 % 60);
-
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-interface Session {
-  id: string;
-  title: string;
-  time: number;
-}
-
-export default function Home() {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [time, setTime] = useState<number>(0);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [taskTitle, setTaskTitle] = useState<string>("");
-  const [sessions, setSessions] = useState<Session[]>([]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    }
-  }, [isPlaying])
-
-  function handleSave(): void {
-    const newSession: Session = {
-      id: crypto.randomUUID(),
-      title: taskTitle,
-      time: time
-    }
-
-    setSessions((prevSessions) => [...prevSessions, newSession]);
-
-    setTime(0);
-    setTaskTitle("");
-    setIsModalOpen(false);
-  }
-
-  function onButtonClick(): void {
-    if (isPlaying) {
-      setIsModalOpen((prev) => !prev);
-    }
-
-    setIsPlaying((prev) => !prev);
-  }
+export default async function Home() {
+  const sessions = await getAllSessions();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-6">{formatTime(time)}</h1>
-      <Button onClick={onButtonClick}>
-        {isPlaying ? <Square className="mr-2 size-4 fill-current" /> : <Play className="mr-2 size-4 fill-current" />}
-        {isPlaying ? "Arrêter" : "Démarrer"}
-      </Button>
+      <Timer />
+
       <ul className="m-6">
         {sessions.map((session) => (
           <li
@@ -83,16 +22,6 @@ export default function Home() {
           </li>
         ))}
       </ul>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Enregistrer la session</DialogTitle>
-            <DialogDescription>Ajoutez un titre pour lier ce temps à un projet ou un client.</DialogDescription>
-          </DialogHeader>
-          <Input placeholder="Sur quoi travaillez-vous ?" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
-          <Button onClick={handleSave}>Enregistrer</Button>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

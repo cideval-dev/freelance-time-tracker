@@ -2,6 +2,7 @@
 
 import { db } from "@/db"
 import { sessionsTable } from "@/db/schema"
+import { revalidatePath } from "next/cache";
 
 export async function createSession(title: string, time: number) {
     await db.insert(sessionsTable).values({
@@ -9,4 +10,10 @@ export async function createSession(title: string, time: number) {
         title: title, 
         time: time}
     );
+
+    revalidatePath("/");
+};
+
+export async function getSessions() {
+    return await db.select().from(sessionsTable);
 };
